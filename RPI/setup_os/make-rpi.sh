@@ -12,7 +12,7 @@ if [ $# -ne 3 ]; then
   exit 1
 fi
 
-export DEV=$1 # Update export DEV= to the device you see on lsblk for your SD card reader, the command is 'diskutil list' on MacO
+export DEV=$1 
 export IMAGE=~/2018-11-13-raspbian-stretch-lite.img
 
 if [ -z "$SKIP_FLASH" ];
@@ -59,6 +59,15 @@ echo "gpu_mem=16" >> /mnt/${DEV}1/config.txt
 cp /mnt/${DEV}2/etc/dhcpcd.conf /mnt/${DEV}2/etc/dhcpcd.conf.orig
 
 sed s/100/$3/g template-dhcpcd.conf > /mnt/${DEV}2/etc/dhcpcd.conf
+
+cd /mnt/${DEV}1
+
+cat <<EOF > cmdline.txt
+`cat cmdline.txt` cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory
+EOF
+
+sync
+sleep 1s
 
 echo "Unmounting SD Card"
 
