@@ -26,40 +26,43 @@ sleep 1s
 
 echo "Mounting SD card from /dev/$DEV"
 
-mount /dev/${DEV}1 /mnt/rpi/boot
-mount /dev/${DEV}2 /mnt/rpi/root
+mkdir -p /mnt/${DEV}1
+mkdir -p /mnt/${DEV}2
+
+mount /dev/${DEV}1 /mnt/${DEV}1
+mount /dev/${DEV}2 /mnt/${DEV}2
 
 # Add our SSH key
 #mkdir -p /mnt/rpi/root/home/pi/.ssh/
 #cat ~/.ssh/id_rsa.pub > /mnt/rpi/root/home/pi/.ssh/authorized_keys
 
 echo "Enabling SSH"
-cp ssh /mnt/rpi/boot/
+cp ssh /mnt/${DEV}1/
 
 echo "Copying WIFI config file"
 echo "Trying to backup original wpa_supplicant.conf. You may see a file not found error if the file doesn't exist."
-mv /mnt/rpi/boot/wpa_supplicant.conf /mnt/rpi/boot/wpa_supplicant.conf.orig
-cp wpa_supplicant.conf /mnt/rpi/boot/
+mv /mnt/${DEV}1/wpa_supplicant.conf /mnt/${DEV}1/wpa_supplicant.conf.orig
+cp wpa_supplicant.conf /mnt/${DEV}1/
 
 #echo "Disabling password login"
 #sed -ie s/#PasswordAuthentication\ yes/PasswordAuthentication\ no/g /mnt/rpi/root/etc/ssh/sshd_config
 
 echo "Setting hostname to $2"
 
-sed -ie s/raspberrypi/$2/g /mnt/rpi/root/etc/hostname
-sed -ie s/raspberrypi/$2/g /mnt/rpi/root/etc/hosts
+sed -ie s/raspberrypi/$2/g /mnt/${DEV}2/etc/hostname
+sed -ie s/raspberrypi/$2/g /mnt/${DEV}2/etc/hosts
 
 # Reduce GPU memory to minimum
-echo "gpu_mem=16" >> /mnt/rpi/boot/config.txt
+echo "gpu_mem=16" >> /mnt/${DEV}1/config.txt
 
 # Set static IP
-cp /mnt/rpi/root/etc/dhcpcd.conf /mnt/rpi/root/etc/dhcpcd.conf.orig
+cp /mnt/${DEV}2/etc/dhcpcd.conf /mnt/${DEV}2/etc/dhcpcd.conf.orig
 
-sed s/100/$3/g template-dhcpcd.conf > /mnt/rpi/root/etc/dhcpcd.conf
+sed s/100/$3/g template-dhcpcd.conf > /mnt/${DEV}2/etc/dhcpcd.conf
 
 echo "Unmounting SD Card"
 
-umount /mnt/rpi/boot
-umount /mnt/rpi/root
+umount /mnt/${DEV}1
+umount /mnt/${DEV}2
 
 sync
