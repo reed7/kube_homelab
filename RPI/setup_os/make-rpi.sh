@@ -58,7 +58,8 @@ echo "gpu_mem=16" >> /mnt/${DEV}1/config.txt
 # Set static IP
 cp /mnt/${DEV}2/etc/dhcpcd.conf /mnt/${DEV}2/etc/dhcpcd.conf.orig
 
-sed s/100/$3/g template-dhcpcd.conf > /mnt/${DEV}2/etc/dhcpcd.conf
+sed s/70/$3/g template-dhcpcd.conf > /mnt/${DEV}2/etc/dhcpcd.conf # cable
+sed s/90/$(( $3+20 ))/g template-dhcpcd.conf > /mnt/${DEV}2/etc/dhcpcd.conf # wifi
 
 cd /mnt/${DEV}1
 
