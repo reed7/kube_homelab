@@ -11,4 +11,3 @@ sysctl net.bridge.bridge-nf-call-iptables=1
 curl -L git.io/weave -o /usr/local/bin/weave && chmod a+x /usr/local/bin/weave
 
 kubectl taint nodes --all node-role.kubernetes.io/master-
-
