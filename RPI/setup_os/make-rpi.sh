@@ -5,16 +5,15 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-if [ -z $1 ]; then
-  echo "Usage: ./make-rpi.sh <hostname> <ip-suffix>"
-  echo "       ./make-rpi.sh node-1 101"
-  echo "       ./make-rpi.sh node-2 102"
+if [ $# -ne 3 ]; then
+  echo "Usage: ./make-rpi.sh <sdcard_device_name> <hostname> <ip-suffix>"
+  echo "       ./make-rpi.sh sdb node-1 101"
+  echo "       ./make-rpi.sh sdb node-2 102"
   exit 1
 fi
 
-export DEV=sdb # Update export DEV= to the device you see on lsblk for your SD card reader, the command is 'diskutil list' on MacO
-export IMAGE=2018-11-13-raspbian-stretch-lite.img
-export NFS_SRV=192.168.1.76
+export DEV=$1 # Update export DEV= to the device you see on lsblk for your SD card reader, the command is 'diskutil list' on MacO
+export IMAGE=~/2018-11-13-raspbian-stretch-lite.img
 
 if [ -z "$SKIP_FLASH" ];
 then
@@ -38,16 +37,17 @@ echo "Enabling SSH"
 cp ssh /mnt/rpi/boot/
 
 echo "Copying WIFI config file"
+echo "Trying to backup original wpa_supplicant.conf. You may see a file not found error if the file doesn't exist."
 mv /mnt/rpi/boot/wpa_supplicant.conf /mnt/rpi/boot/wpa_supplicant.conf.orig
 cp wpa_supplicant.conf /mnt/rpi/boot/
 
 #echo "Disabling password login"
 #sed -ie s/#PasswordAuthentication\ yes/PasswordAuthentication\ no/g /mnt/rpi/root/etc/ssh/sshd_config
 
-echo "Setting hostname to $1"
+echo "Setting hostname to $2"
 
-sed -ie s/raspberrypi/$1/g /mnt/rpi/root/etc/hostname
-sed -ie s/raspberrypi/$1/g /mnt/rpi/root/etc/hosts
+sed -ie s/raspberrypi/$2/g /mnt/rpi/root/etc/hostname
+sed -ie s/raspberrypi/$2/g /mnt/rpi/root/etc/hosts
 
 # Reduce GPU memory to minimum
 echo "gpu_mem=16" >> /mnt/rpi/boot/config.txt
@@ -55,13 +55,7 @@ echo "gpu_mem=16" >> /mnt/rpi/boot/config.txt
 # Set static IP
 cp /mnt/rpi/root/etc/dhcpcd.conf /mnt/rpi/root/etc/dhcpcd.conf.orig
 
-sed s/100/$2/g template-dhcpcd.conf > /mnt/rpi/root/etc/dhcpcd.conf
-
-mkdir -p /mnt/rpi/root/mnt/nfsshare
-
-cat <<EOF >> /mnt/rpi/root/etc/fstab
-$NFS_SRV:/nfsshare /mnt/nfsshare nfs defaults 0 0
-EOF
+sed s/100/$3/g template-dhcpcd.conf > /mnt/rpi/root/etc/dhcpcd.conf
 
 echo "Unmounting SD Card"
 

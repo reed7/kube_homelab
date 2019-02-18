@@ -7,4 +7,4 @@
 ## RPI setup
 * A Linux server is required for writing files to ext4 file system
 * Burn Respbian to SD card: RPI/setup_os/make-rpi.sh (make-rpi.sh <node_name> <ip_suffix>)
-* Run ansible from macbook: ansible-playbook RPI/ansible/setup_kube_rpi_nodes.yml 
+* Run ansible from macbook: ansible-playbook -i RPI/ansible/rpi_hosts.ini RPI/ansible/setup_kube_rpi_nodes.yml 
