@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# For installing docker and kube on amd64 CentOS7 machines
+# - Install Docker
+# - Open ports on firewall
+# - Install Kube
+# - Change SELINUX settings
+# - Change network settings
+#
+# This script doesn't take care of disabling swap, you need to do that manually:
+# - swapoff -a
+# - Remove the entry on /etc/fstab
+# - Reboot
+
 curl -fsSL https://get.docker.com/ | sh
 
 systemctl start docker

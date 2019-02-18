@@ -45,10 +45,10 @@ spec:
               - key: beta.kubernetes.io/arch
                 operator: In
                 values:
-                - arm
+                - amd64
       containers:
       - name: master
-        image: redis
+        image: k8s.gcr.io/redis:e2e
         resources:
           requests:
             cpu: 100m

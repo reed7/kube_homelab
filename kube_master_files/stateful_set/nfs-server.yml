@@ -1,0 +1,66 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: nfs-server
+spec:
+  ports:
+    - name: nfs
+      port: 2049
+    - name: mountd
+      port: 20048
+    - name: rpcbind
+      port: 111
+    - name: port1
+      port: 32765
+    - name: port2
+      port: 32767
+  selector:
+    role: nfs-server
+---
+apiVersion: apps/v1beta1
+kind: Deployment 
+metadata:
+  name: nfs-server
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: nfs-server
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:      
+              - key: kubernetes.io/hostname
+                operator: In
+                values: 
+                - nfs-0
+      containers:
+      - name: nfs-server
+        image: erichough/nfs-server
+        ports:
+          - name: nfs
+            containerPort: 2049
+          - name: mountd
+            containerPort: 20048
+          - name: rpcbind
+            containerPort: 111
+          - name: port1
+            containerPort: 32765
+          - name: port2
+            containerPort: 32767
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - mountPath: /exports
+            name: host-path
+        env:
+          - name: NFS_EXPORT_0
+            value: "/exports *(rw,sync,no_root_squash)"
+      volumes:
+        - name: host-path
+          hostPath:
+            path: /share
+            type: Directory
