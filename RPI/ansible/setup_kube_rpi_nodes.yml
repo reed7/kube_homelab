@@ -1,0 +1,78 @@
+- name: Setup RPIs
+  hosts: kube-slaves
+  remote_user: pi
+  become: true
+  become_user: root
+  gather_facts: false
+
+  vars:
+    pi_user: pi
+    home_dir: /home/pi
+    docker_install_script: "{{ home_dir }}/docker.sh"
+    kube_apt_key: "{{ home_dir }}/kube_apt_key.gpg"
+
+  pre_tasks:
+  - name: Update packages
+    apt:
+      upgrade: yes
+      update_cache: yes
+      cache_valid_time: 86400 #One day
+
+  tasks:
+  - name: Pre Install Docker require packages
+    apt:
+      name: "{{packages}}"
+      state: present
+    vars:
+      packages:
+        - apt-transport-https
+        - ca-certificates
+        - software-properties-common
+
+  - name: Download Docker Install Script
+    get_url:
+      url: https://get.docker.com
+      dest: "{{ docker_install_script }}"
+      mode: u=rwx,g=rwx,o=rwx
+
+  - name: Run Install Script
+    command: sh {{ docker_install_script }}
+
+  - name: Enable pi User to Run Docker
+    command:
+    args:
+      argv:
+        - usermod
+        - "{{ pi_user }}"
+        - -aG
+        - docker
+
+  - name: Enable Docker At Startup
+    systemd:
+      name: docker
+      enabled: yes
+
+  - name: Disable Swap
+    shell: dphys-swapfile swapoff && dphys-swapfile uninstall && update-rc.d dphys-swapfile remove
+
+  - name: Enable Cgroup
+    shell: cp /boot/cmdline.txt /boot/cmdline.txt.bak &&
+            echo "$(head -n1 /boot/cmdline.txt) cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory"
+              > /boot/cmdline.txt
+    args:
+      creates: /boot/cmdline.txt.bak
+
+  - name: Add Kube Apt Key
+    apt_key:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      state: present
+
+  - name: Add Kube Repo to apt
+    apt_repository:
+      repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+      state: present
+
+  - name: Install Kubeadm
+    apt:
+      name: kubeadm
+      state: latest
