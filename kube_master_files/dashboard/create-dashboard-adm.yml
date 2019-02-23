@@ -1,3 +1,7 @@
+#
+# kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')
+# ^ command to grab the token for the created dashboard user
+#
 apiVersion: v1
 kind: ServiceAccount
 metadata:
