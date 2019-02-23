@@ -35,8 +35,8 @@ spec:
             - matchExpressions:      
               - key: kubernetes.io/hostname
                 operator: In
-                values: 
-                - nfs-0
+                values:
+                - centos7-1
       containers:
       - name: nfs-server
         image: erichough/nfs-server
