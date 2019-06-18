@@ -19,7 +19,7 @@ metadata:
 spec:
   serviceName: "nginx"
   podManagementPolicy: "Parallel" # Default is "OrderedReady"
-  replicas: 4
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
