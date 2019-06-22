@@ -74,5 +74,10 @@
 
   - name: Install Kubeadm
     apt:
+      name: kubernetes-cni
+      state: 0.7.5-00
+
+  - name: Install Kubeadm
+    apt:
       name: kubeadm
-      state: latest
+      state: 1.13.7-00
