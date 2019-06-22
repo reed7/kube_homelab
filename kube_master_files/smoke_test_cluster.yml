@@ -1,3 +1,8 @@
+# Test cluster to verify if the kube cluster has been setup successfully
+# Usage:
+# deploy: kubectl apply -f smoke_test_cluster.yml
+# check the status: kubectl get pods
+# verify the service: curl -XPOST http://<kube_master_host>:31118 -H 'application/json' -d '#test' 
 apiVersion: v1
 kind: Service
 metadata:

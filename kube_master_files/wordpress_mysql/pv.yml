@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv
+spec:
+  storageClassName: local
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /mysql
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-1
+spec:
+  storageClassName: nfs
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  nfs:
+    server: 10.105.160.108
+    path: "/exports/db"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-0
+spec:
+  storageClassName: nfs
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  nfs:
+    server: 10.105.160.108
+    path: "/exports/wordpress"

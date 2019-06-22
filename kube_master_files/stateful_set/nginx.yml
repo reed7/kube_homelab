@@ -18,7 +18,8 @@ metadata:
   name: web
 spec:
   serviceName: "nginx"
-  replicas: 2
+  podManagementPolicy: "Parallel" # Default is "OrderedReady"
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
@@ -49,8 +50,8 @@ spec:
   - metadata:
       name: www
     spec:
-      accessModes: [ "ReadWriteMany" ]
-      #storageClassName: slow
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: slow
       resources:
         requests:
           storage: 1Gi
