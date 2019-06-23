@@ -8,7 +8,7 @@ services:
     networks:
       - monitoring
     volumes:
-      - /home/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
       # - /Users/wzhong/Projects/docker/kube/prom_monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
 
   grafana-rpi:
