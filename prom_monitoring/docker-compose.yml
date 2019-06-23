@@ -1,0 +1,27 @@
+version: "3.7"
+services:
+
+  prom-rpi:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+    volumes:
+      - /home/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      # - /Users/wzhong/Projects/docker/kube/prom_monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana-rpi:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+networks:
+  monitoring:
+
+volumes:
+  grafana-storage:
