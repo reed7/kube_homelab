@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: py_socket_srv
+  labels:
+    app: py_socket_srv
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+      nodePort: 8080
+  selector:
+    app: py_socket_srv
+---
+apiVersion: apps/v1beta1 # for versions before 1.6.0 use extensions/v1beta1
+kind: Deployment
+metadata:
+  name: py_socket_srv
+spec:
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: py_socket_srv
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - arm
+      containers:
+      - name: py_socket_srv
+        image: reed7/py_socket_srv:1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          protocol: TCP
