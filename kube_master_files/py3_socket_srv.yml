@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: py_socket_srv
+  name: py-socket-srv
   labels:
-    app: py_socket_srv
+    app: py-socket-srv
 spec:
   type: NodePort
   ports:
@@ -12,18 +12,18 @@ spec:
       targetPort: 8080
       nodePort: 8080
   selector:
-    app: py_socket_srv
+    app: py-socket-srv
 ---
 apiVersion: apps/v1beta1 # for versions before 1.6.0 use extensions/v1beta1
 kind: Deployment
 metadata:
-  name: py_socket_srv
+  name: py-socket-srv
 spec:
   replicas: 4
   template:
     metadata:
       labels:
-        app: py_socket_srv
+        app: py-socket-srv
     spec:
       affinity:
         nodeAffinity:
@@ -35,7 +35,7 @@ spec:
                 values:
                 - arm
       containers:
-      - name: py_socket_srv
+      - name: py-socket-srv
         image: reed7/py_socket_srv:1
         imagePullPolicy: Always
         ports:
